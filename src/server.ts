@@ -1,21 +1,21 @@
-import { PrismaClient } from '@prisma/client'
+import { fastify } from "fastify";
 
-const prisma = new PrismaClient()
+import { fastifyCors } from '@fastify/cors'
+import { getAllUsersRoute } from "./routes/get-all-users";
+import register from "./routes/register";
 
-async function main() {
-//   const user = await prisma.user.create({
-//     data: {
-//       name: 'Alice',
-//       email: 'alice@prisma.io',
-//     },
-//   })
-//   console.log(user)
-const users = await prisma.user.findMany()
-  console.log(users)
-}
+const app = fastify();
 
-main().catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+app.register(fastifyCors, {
+    origin: '*'
+})
+
+app.register(getAllUsersRoute)
+app.register(register)
+
+
+app.listen({
+    port: 3333,
+}).then(() => {
+    console.log('HTTP Server Running!')
+})
